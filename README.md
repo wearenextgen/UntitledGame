@@ -83,6 +83,8 @@ The game can be played directly from the repository or hosted on any web server.
 
 Simply click the link above to start playing immediately in your browser!
 
+**Direct Link**: https://wearenextgen.github.io/UntitledGame/
+
 ## 🎯 Game Mechanics
 
 ### Physics System
