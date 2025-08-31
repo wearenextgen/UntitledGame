@@ -202,28 +202,28 @@
 
     .start-content {
       background: rgba(255, 255, 255, 0.9);
-      padding: 32px;
-      border-radius: 12px;
+      padding: 40px;
+      border-radius: 16px;
       text-align: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(20px);
-      max-width: 400px;
-      width: 90%;
+      max-width: 600px;
+      width: 95%;
       border: 0.5px solid rgba(0, 0, 0, 0.1);
     }
 
     .start-content h1 {
       color: #333;
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 600;
-      margin: 0 0 20px 0;
+      margin: 0 0 24px 0;
     }
 
     .start-content p {
       color: #666;
-      font-size: 16px;
-      margin: 15px 0;
-      line-height: 1.5;
+      font-size: 18px;
+      margin: 18px 0;
+      line-height: 1.6;
     }
 
     .controls-section {
@@ -311,12 +311,12 @@
       }
 
       .start-content {
-        max-width: 500px;
-        padding: 50px;
+        max-width: 700px;
+        padding: 60px;
       }
 
       .start-content h1 {
-        font-size: 36px;
+        font-size: 42px;
       }
 
       /* Hide mobile controls on desktop */
@@ -357,17 +357,17 @@
       }
 
       .start-content {
-        padding: 25px 20px;
-        margin: 15px;
-        max-width: 95%;
+        padding: 30px 25px;
+        margin: 20px;
+        max-width: 98%;
       }
 
       .start-content h1 {
-        font-size: 32px;
+        font-size: 40px;
       }
 
       .start-content p {
-        font-size: 16px;
+        font-size: 20px;
       }
 
       .controls-section {
@@ -537,20 +537,31 @@
     const desktopControls = document.querySelector('.desktop-controls');
     const mobileControls = document.querySelector('.mobile-controls');
     
+    console.log('Updating control sections - Mobile:', isMobile, 'Desktop controls found:', !!desktopControls, 'Mobile controls found:', !!mobileControls);
+    
     if (desktopControls && mobileControls) {
       if (isMobile) {
         desktopControls.style.display = 'none';
         mobileControls.style.display = 'block';
+        console.log('Showing mobile controls, hiding desktop controls');
       } else {
         desktopControls.style.display = 'block';
         mobileControls.style.display = 'none';
+        console.log('Showing desktop controls, hiding mobile controls');
       }
+    } else {
+      console.log('Control sections not found:', { desktopControls: !!desktopControls, mobileControls: !!mobileControls });
     }
   }
 
   // Update controls hint on load and resize
   updateControlsHint();
-  updateControlSections();
+  
+  // Delay to ensure DOM is ready
+  setTimeout(() => {
+    updateControlSections();
+  }, 100);
+  
   window.addEventListener('resize', () => {
     updateControlsHint();
     updateControlSections();
