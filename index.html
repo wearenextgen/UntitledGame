@@ -176,6 +176,108 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    #start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      backdrop-filter: blur(10px);
+    }
+
+    .start-content {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(20px);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .start-content h1 {
+      color: #333;
+      font-size: 32px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+    }
+
+    .start-content p {
+      color: #666;
+      font-size: 16px;
+      margin: 15px 0;
+      line-height: 1.5;
+    }
+
+    .controls-section {
+      background: rgba(0, 122, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .controls-section h3 {
+      color: #007AFF;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 15px 0;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0, 122, 255, 0.1);
+    }
+
+    .control-item:last-child {
+      border-bottom: none;
+    }
+
+    .control-key {
+      background: #007AFF;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .start-btn {
+      background: #007AFF;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .start-btn:hover {
+      background: #0056CC;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+    }
+
+    .start-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
     @media (min-width: 768px) {
       #hud {
         font-size: 18px;
@@ -185,6 +287,15 @@
       .controls-hint {
         font-size: 16px;
         padding: 12px 24px;
+      }
+
+      .start-content {
+        max-width: 500px;
+        padding: 50px;
+      }
+
+      .start-content h1 {
+        font-size: 36px;
       }
     }
 
@@ -197,6 +308,31 @@
       .controls-hint {
         font-size: 12px;
         padding: 8px 16px;
+      }
+
+      .start-content {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+
+      .start-content h1 {
+        font-size: 28px;
+      }
+
+      .start-content p {
+        font-size: 14px;
+      }
+
+      .controls-section {
+        padding: 15px;
+      }
+
+      .controls-section h3 {
+        font-size: 16px;
+      }
+
+      .control-item {
+        font-size: 14px;
       }
     }
   </style>
@@ -216,6 +352,51 @@
 </div>
     
     <canvas id="game"></canvas>
+    
+    <div id="start-screen">
+      <div class="start-content">
+        <h1>UF Runner</h1>
+        <p>Collect items, avoid obstacles, and achieve the highest score!</p>
+        
+        <div class="controls-section">
+          <h3>🎮 Controls</h3>
+          <div class="control-item">
+            <span>Jump</span>
+            <span class="control-key">↑</span>
+          </div>
+          <div class="control-item">
+            <span>Big Jump</span>
+            <span class="control-key">Space</span>
+          </div>
+          <div class="control-item">
+            <span>Move Left/Right</span>
+            <span class="control-key">← →</span>
+          </div>
+          <div class="control-item">
+            <span>Emergency Descent</span>
+            <span class="control-key">↓</span>
+          </div>
+        </div>
+
+        <div class="controls-section">
+          <h3>📱 Mobile</h3>
+          <div class="control-item">
+            <span>Jump</span>
+            <span class="control-key">Tap ↑</span>
+          </div>
+          <div class="control-item">
+            <span>Move</span>
+            <span class="control-key">Swipe ←→</span>
+          </div>
+          <div class="control-item">
+            <span>Descent</span>
+            <span class="control-key">Tap ↓</span>
+          </div>
+        </div>
+
+        <button id="start-game" class="start-btn">Start Game</button>
+      </div>
+    </div>
     
         <div class="controls-hint">
       <strong>Desktop:</strong> Up/Space to jump, Down to descend, Left/Right to move
@@ -303,6 +484,7 @@
     let alive = true;
     let gameTime = 0;
     let lastTs = 0;
+    let gameStarted = false;
     
     // Power-up states
     let multiplier = 1;
@@ -356,7 +538,7 @@
 
       console.log('Loading assets...', assets.length, 'total images:', totalImages);
       assets.forEach(asset => {
-        const img = new Image();
+    const img = new Image();
         img.onload = () => {
           console.log('Loaded:', asset.key, asset.src);
           IM[asset.key] = img;
@@ -388,6 +570,11 @@
       invincible: false,
       invincibleTime: 0
     };
+    
+    // Show start screen if game hasn't started yet
+    if (!gameStarted) {
+      document.getElementById('start-screen').style.display = 'flex';
+    }
     
     // Clear all arrays
     obstacles.length = 0;
@@ -535,6 +722,8 @@
   
 
   function start() {
+    gameStarted = true;
+    document.getElementById('start-screen').style.display = 'none';
     reset();
     lastTs = performance.now();
     requestAnimationFrame(loop);
@@ -1176,7 +1365,7 @@
 
     // Controls
   window.addEventListener('keydown', (e) => {
-    if (!alive) return;
+    if (!alive || !gameStarted) return;
       
       switch(e.code) {
         case 'ArrowLeft':
@@ -1226,14 +1415,14 @@
     const minSwipeDistance = 40;
 
     canvas.addEventListener('touchstart', (e) => {
-      if (!alive) return;
+      if (!alive || !gameStarted) return;
       e.preventDefault();
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
     });
 
     canvas.addEventListener('touchend', (e) => {
-    if (!alive) return;
+    if (!alive || !gameStarted) return;
       e.preventDefault();
       
       const touchEndX = e.changedTouches[0].clientX;
@@ -1242,18 +1431,27 @@
       const deltaX = touchEndX - touchStartX;
       const deltaY = touchEndY - touchStartY;
       
-      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      // Check if it's a tap (small movement)
+      const isTap = Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20;
+      
+      if (isTap) {
+        // Tap to jump
+        player.velocity = JUMP_VELOCITY;
+        createSparkles(player.x, getRowY(player.row));
+      } else if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        // Vertical swipe
         if (Math.abs(deltaY) > minSwipeDistance) {
           if (deltaY < 0) {
-            // Swipe up = jump
-            player.velocity = JUMP_VELOCITY;
-            createSparkles(player.x, getRowY(player.row));
+            // Swipe up = big jump
+            player.velocity = SPACE_VELOCITY;
+            createSparkles(player.x, getRowY(player.row), 12);
           } else {
             // Swipe down = emergency descent
             player.velocity = Math.abs(player.velocity) * 0.5;
           }
         }
       } else {
+        // Horizontal swipe
         if (Math.abs(deltaX) > minSwipeDistance) {
           if (deltaX < 0) {
             // Swipe left = move folder left
@@ -1264,6 +1462,11 @@
           }
         }
       }
+    });
+
+    // Start game button
+    document.getElementById('start-game').addEventListener('click', () => {
+      start();
     });
 
     // Volume control and music toggle
@@ -1299,9 +1502,12 @@
     });
     
     // Restart handlers - music continues playing
-    document.getElementById('restart').addEventListener('click', () => {
+      document.getElementById('restart').addEventListener('click', () => {
       reset();
       document.getElementById('overlay').style.display = 'none';
+      // Show start screen again
+      document.getElementById('start-screen').style.display = 'flex';
+      gameStarted = false;
       // Ensure music keeps playing
       if (backgroundMusic && backgroundMusic.paused) {
         backgroundMusic.play().catch(e => console.log('Music restart failed'));
@@ -1312,6 +1518,9 @@
       if (e.target === document.getElementById('overlay')) {
         reset();
         document.getElementById('overlay').style.display = 'none';
+        // Show start screen again
+        document.getElementById('start-screen').style.display = 'flex';
+        gameStarted = false;
         // Ensure music keeps playing
         if (backgroundMusic && backgroundMusic.paused) {
           backgroundMusic.play().catch(e => console.log('Music restart failed'));
