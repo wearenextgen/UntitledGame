@@ -321,7 +321,9 @@
       }
 
       .game-logo {
-        max-width: 300px;
+        max-width: 400px;
+        width: 100%;
+        height: auto;
       }
 
       /* Hide mobile controls on desktop */
@@ -368,7 +370,9 @@
       }
 
       .game-logo {
-        max-width: 250px;
+        max-width: 350px;
+        width: 100%;
+        height: auto;
       }
 
       .start-content p {
@@ -431,7 +435,7 @@
     <div id="start-screen">
       <div class="start-content">
         <div class="logo-container">
-          <img src="untitledfolders_logo.png" alt="Untitled Folders" class="game-logo">
+          <img src="untitledfolders_logo.png" alt="Untitled Folders" class="game-logo" onload="console.log('Logo loaded successfully')" onerror="console.log('Logo failed to load')">
         </div>
         <p>Collect items, avoid obstacles, and achieve the highest score!</p>
         
@@ -645,11 +649,11 @@
     const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
     const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
     const baseScale = Math.min(canvasWidth, canvasHeight) / 800;
-    const finalScale = isMobile ? baseScale * 3 : baseScale;
+    const finalScale = isMobile ? baseScale * 8 : baseScale; // Much bigger scaling for mobile
     
     // Debug scaling every 5 seconds
     if (Math.floor(gameTime / 5000) > Math.floor((gameTime - 1) / 5000)) {
-      console.log('Scaling debug - Mobile:', isMobile, 'Canvas:', canvasWidth, 'x', canvasHeight, 'BaseScale:', baseScale.toFixed(3), 'FinalScale:', finalScale.toFixed(3));
+      console.log('Scaling debug - Mobile:', isMobile, 'Canvas:', canvasWidth, 'x', canvasHeight, 'BaseScale:', baseScale.toFixed(3), 'FinalScale:', finalScale.toFixed(3), 'UserAgent:', navigator.userAgent);
     }
     
     return finalScale;
