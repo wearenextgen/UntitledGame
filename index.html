@@ -429,7 +429,7 @@
         <p>Collect items, avoid obstacles, and achieve the highest score!</p>
         
         <div class="controls-section desktop-controls">
-          <h3>🎮 Desktop Controls</h3>
+          <h3>🎮 Controls</h3>
           <div class="control-item">
             <span>Jump</span>
             <span class="control-key">↑</span>
@@ -449,7 +449,7 @@
         </div>
 
         <div class="controls-section mobile-controls">
-          <h3>📱 Mobile Controls</h3>
+          <h3>📱 Controls</h3>
           <div class="control-item">
             <span>Jump</span>
             <span class="control-key">Tap ↑</span>
@@ -636,7 +636,7 @@
   function getScaleFactor() {
     const isMobile = window.innerWidth <= 767;
     const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800;
-    return isMobile ? baseScale * 3 : baseScale; // 3x bigger on mobile
+    return isMobile ? baseScale * 9 : baseScale; // 9x bigger on mobile (3x more than before)
   }
 
   // Get gravity based on device type
@@ -726,6 +726,8 @@
     coinCount = 0;
     alive = true;
     gameTime = 0;
+    
+    console.log('Game reset - Speed:', speed, 'GameTime:', gameTime);
     
     // Reset power-ups
     multiplier = 1;
@@ -887,7 +889,13 @@
 
   function tick(dt) {
     gameTime += dt;
-    speed = Math.min(MAX_SPEED, speed + 0.005 * dt);
+    const oldSpeed = speed;
+    speed = Math.min(MAX_SPEED, speed + 0.002 * dt); // Reduced speed progression rate
+    
+    // Debug speed progression every 5 seconds
+    if (Math.floor(gameTime / 5000) > Math.floor((gameTime - dt) / 5000)) {
+      console.log('Speed progression - GameTime:', Math.floor(gameTime/1000), 's, Speed:', speed.toFixed(2));
+    }
     
     // Optimized physics with better bounds checking
     player.velocity += getGravity() * (dt / 16);
