@@ -650,7 +650,7 @@
     const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
     const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
     const baseScale = Math.min(canvasWidth, canvasHeight) / 800;
-    const finalScale = isMobile ? baseScale * 12 : baseScale * 1.5; // 50% bigger for all devices, 12x for mobile
+    const finalScale = isMobile ? baseScale * 3 : baseScale * 1.5; // 50% bigger for desktop, 3x for mobile
     
     // Debug scaling every 5 seconds
     if (Math.floor(gameTime / 5000) > Math.floor((gameTime - 1) / 5000)) {
@@ -1074,9 +1074,11 @@
         particleEffects.splice(0, particleEffects.length - MAX_PARTICLES);
       }
 
-      // Collision detection with larger hitbox
-      const playerWidth = 50; // Larger hitbox for better collection
-      const playerHeight = 50; // Larger hitbox for better collection
+      // Collision detection with proper scaling
+      const baseScale = getScaleFactor();
+      const playerScale = 0.15 * baseScale * 0.6; // Match visual scaling
+      const playerWidth = 50 * playerScale; // Match visual scaling
+      const playerHeight = 50 * playerScale; // Match visual scaling
       
       const playerBox = {
         x: player.x - playerWidth / 2,
@@ -1090,8 +1092,8 @@
         const coin = coins[i];
         const baseScale = getScaleFactor();
         const coinScale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * baseScale * 0.87; // CD 15% bigger, others 10% bigger
-        const coinWidth = 50 * coinScale * 2.0; // Larger collision box
-        const coinHeight = 50 * coinScale * 2.0; // Larger collision box
+        const coinWidth = 50 * coinScale; // Match visual scaling
+        const coinHeight = 50 * coinScale; // Match visual scaling
         
         const coinBox = {
           x: coin.x - coinWidth / 2,
@@ -1133,8 +1135,8 @@
         const obstacle = obstacles[i];
         const baseScale = getScaleFactor();
         const obstacleScale = (obstacle.type === 'virus' ? 0.06 : 0.08) * baseScale * 0.76; // 10% bigger
-        const obstacleWidth = 50 * obstacleScale * 1.1;
-        const obstacleHeight = 50 * obstacleScale * 1.1;
+        const obstacleWidth = 50 * obstacleScale; // Match visual scaling
+        const obstacleHeight = 50 * obstacleScale; // Match visual scaling
         
         const obstacleBox = {
           x: obstacle.x - obstacleWidth / 2,
