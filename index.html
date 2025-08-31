@@ -218,7 +218,7 @@
     }
 
     .game-logo {
-      max-width: 200px;
+      width: 100%;
       height: auto;
       display: block;
       margin: 0 auto;
@@ -321,7 +321,6 @@
       }
 
       .game-logo {
-        max-width: 400px;
         width: 100%;
         height: auto;
       }
@@ -370,7 +369,6 @@
       }
 
       .game-logo {
-        max-width: 350px;
         width: 100%;
         height: auto;
       }
@@ -571,6 +569,9 @@
   // Delay to ensure DOM is ready
   setTimeout(() => {
     updateControlSections();
+    // Start the game loop (but game logic only runs when gameStarted = true)
+    lastTs = performance.now();
+    requestAnimationFrame(loop);
   }, 100);
   
   window.addEventListener('resize', () => {
@@ -700,8 +701,8 @@
           IM[asset.key] = img;
           loadedImages++;
           if (loadedImages === totalImages) {
-            console.log('All assets loaded, starting game...');
-            start();
+            console.log('All assets loaded, ready to play...');
+            // Don't auto-start, wait for user to click play
           }
         };
         img.onerror = () => {
@@ -709,8 +710,8 @@
           IM[asset.key] = createFallbackImage(asset.fallback);
           loadedImages++;
           if (loadedImages === totalImages) {
-            console.log('All assets loaded (with fallbacks), starting game...');
-            start();
+            console.log('All assets loaded (with fallbacks), ready to play...');
+            // Don't auto-start, wait for user to click play
           }
         };
         img.src = asset.src;
@@ -902,7 +903,7 @@
     const dt = Math.min(16.67, ts - lastTs); // Cap at 60 FPS
     lastTs = ts;
     
-    if (alive) tick(dt);
+    if (gameStarted && alive) tick(dt);
     draw();
     requestAnimationFrame(loop);
   }
