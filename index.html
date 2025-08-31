@@ -446,8 +446,8 @@
   // Game constants - responsive values
   let ROW_HEIGHT = 120;
   let ROWS = 3;
-  const START_SPEED = 3;
-  const MAX_SPEED = 8;
+  const START_SPEED = 1.5;
+  const MAX_SPEED = 4;
   const FALL_SPEED = 0.005; // 3x slower gravity for much lighter floating
   const BOUNCE_FACTOR = 0.3;
   const JUMP_VELOCITY = -0.4; // Adjusted for much lighter gravity
@@ -751,7 +751,7 @@
 
   function tick(dt) {
     gameTime += dt;
-    speed = Math.min(MAX_SPEED, speed + 0.01 * dt);
+    speed = Math.min(MAX_SPEED, speed + 0.005 * dt);
     
     // Optimized physics with better bounds checking
     player.velocity += FALL_SPEED * (dt / 16);
@@ -818,12 +818,12 @@
       }
       
       // Spawning
-      if (gameTime - lastSpawn > Math.max(1200, 2500 - score * 0.15)) {
+      if (gameTime - lastSpawn > Math.max(2000, 3500 - score * 0.1)) {
         spawnObstacle();
         lastSpawn = gameTime;
       }
       
-      if (gameTime - lastCoinSpawn > 1500) {
+      if (gameTime - lastCoinSpawn > 2500) {
         spawnCoins();
         lastCoinSpawn = gameTime;
       }
