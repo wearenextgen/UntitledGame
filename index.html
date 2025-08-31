@@ -12,10 +12,15 @@
       -moz-osx-font-smoothing: grayscale;
       overflow: hidden;
       color: #1d1d1f;
+      width: 100%;
+      height: 100%;
+      position: fixed;
     }
 
     #wrap {
-      position: relative;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
@@ -28,6 +33,9 @@
       background: url('new assets/background.png') no-repeat center center;
       background-size: cover;
       display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
 
     #hud {
@@ -305,28 +313,28 @@
 
     @media (max-width: 767px) {
       #hud {
-        font-size: 18px;
-        padding: 15px 25px;
-        top: 20px;
+        font-size: 16px;
+        padding: 12px 20px;
+        top: 15px;
         left: 50%;
         transform: translateX(-50%);
         text-align: center;
-        min-width: 120px;
+        min-width: 100px;
       }
       
       #volume-control {
-        font-size: 12px;
-        padding: 8px 12px;
-        bottom: 20px;
-        left: 20px;
+        font-size: 11px;
+        padding: 6px 10px;
+        bottom: 15px;
+        left: 15px;
         top: auto;
         right: auto;
       }
       
       .controls-hint {
-        font-size: 10px;
-        padding: 6px 12px;
-        bottom: 10px;
+        font-size: 9px;
+        padding: 4px 8px;
+        bottom: 8px;
       }
 
       .start-content {
@@ -374,7 +382,7 @@
       <span>🔊</span>
       <input type="range" id="volume-slider" min="0" max="100" value="50">
       <span id="volume-value">50%</span>
-      <button id="music-toggle" style="margin-left: 10px; padding: 4px 8px; border: none; background: #007AFF; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">▶️</button>
+      <button id="music-toggle" style="margin-left: 8px; padding: 3px 6px; border: none; background: #0071e3; color: white; border-radius: 3px; cursor: pointer; font-size: 11px;">▶️</button>
 </div>
     
     <canvas id="game"></canvas>
