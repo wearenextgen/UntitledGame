@@ -234,6 +234,15 @@
       border: 0.5px solid rgba(0, 113, 227, 0.1);
     }
 
+    /* Default: hide mobile controls, show desktop controls */
+    .mobile-controls {
+      display: none;
+    }
+
+    .desktop-controls {
+      display: block;
+    }
+
     .controls-section h3 {
       color: #0071e3;
       font-size: 16px;
@@ -513,6 +522,8 @@
     const controlsHint = document.getElementById('controls-hint');
     const isMobile = window.innerWidth <= 767;
     
+    console.log('Device detection:', isMobile ? 'Mobile' : 'Desktop', 'Width:', window.innerWidth);
+    
     if (isMobile) {
       controlsHint.innerHTML = '<strong>Mobile:</strong> Tap to jump, swipe to move';
     } else {
@@ -520,18 +531,39 @@
     }
   }
 
+  // Update control sections visibility based on device type
+  function updateControlSections() {
+    const isMobile = window.innerWidth <= 767;
+    const desktopControls = document.querySelector('.desktop-controls');
+    const mobileControls = document.querySelector('.mobile-controls');
+    
+    if (desktopControls && mobileControls) {
+      if (isMobile) {
+        desktopControls.style.display = 'none';
+        mobileControls.style.display = 'block';
+      } else {
+        desktopControls.style.display = 'block';
+        mobileControls.style.display = 'none';
+      }
+    }
+  }
+
   // Update controls hint on load and resize
   updateControlsHint();
-  window.addEventListener('resize', updateControlsHint);
+  updateControlSections();
+  window.addEventListener('resize', () => {
+    updateControlsHint();
+    updateControlSections();
+  });
 
   // Game constants - responsive values
   let ROWS = 3;
-  const START_SPEED = 1.5;
-  const MAX_SPEED = 4;
+  const START_SPEED = 2.25; // 50% faster (1.5 * 1.5)
+  const MAX_SPEED = 6; // 50% faster (4 * 1.5)
 
   const BOUNCE_FACTOR = 0.3;
-  const JUMP_VELOCITY = -0.4; // Adjusted for much lighter gravity
-  const SPACE_VELOCITY = -0.6; // Adjusted for much lighter gravity
+  const JUMP_VELOCITY = -0.2; // 50% slower jump (was -0.4)
+  const SPACE_VELOCITY = -0.3; // 50% slower big jump (was -0.6)
   const MOVE_SPEED = 35; // Horizontal movement speed (7x faster)
   let MIN_X = 100; // Minimum X position (left boundary) - will be updated dynamically
   let MAX_X = 500; // Maximum X position (right boundary) - will be updated dynamically
