@@ -218,9 +218,8 @@
     }
 
     .game-logo {
-      width: 100%;
-      height: 33.33%;
-      object-fit: contain;
+      max-width: 80%;
+      height: auto;
       display: block;
       margin: 0 auto;
     }
@@ -322,9 +321,8 @@
       }
 
       .game-logo {
-        width: 100%;
-        height: 33.33%;
-        object-fit: contain;
+        max-width: 80%;
+        height: auto;
       }
 
       /* Hide mobile controls on desktop */
@@ -371,9 +369,8 @@
       }
 
       .game-logo {
-        width: 100%;
-        height: 33.33%;
-        object-fit: contain;
+        max-width: 90%;
+        height: auto;
       }
 
       .start-content p {
@@ -653,7 +650,7 @@
     const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
     const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
     const baseScale = Math.min(canvasWidth, canvasHeight) / 800;
-    const finalScale = isMobile ? baseScale * 8 : baseScale; // Much bigger scaling for mobile
+    const finalScale = isMobile ? baseScale * 12 : baseScale * 1.5; // 50% bigger for all devices, 12x for mobile
     
     // Debug scaling every 5 seconds
     if (Math.floor(gameTime / 5000) > Math.floor((gameTime - 1) / 5000)) {
@@ -914,7 +911,7 @@
   function tick(dt) {
     gameTime += dt;
     const oldSpeed = speed;
-    speed = Math.min(MAX_SPEED, speed + 0.002 * dt); // Reduced speed progression rate
+    speed = Math.min(MAX_SPEED, speed + 0.001 * dt); // Further reduced speed progression rate
     
     // Debug speed progression every 5 seconds
     if (Math.floor(gameTime / 5000) > Math.floor((gameTime - dt) / 5000)) {
