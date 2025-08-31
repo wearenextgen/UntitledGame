@@ -78,22 +78,10 @@ The game can be played directly from the repository or hosted on any web server.
 - **Optimized Rendering**: 60 FPS gameplay
 - **Responsive Design**: Works on all device sizes
 
-### File Structure
-```
-UntitledGame/
-├── index.html          # Main game file
-├── README.md           # This file
-├── new assets/         # Game assets
-│   ├── background.png  # Game background
-│   ├── folder.png      # Player character
-│   ├── CD.png         # CD collectible
-│   ├── HD.png         # HD collectible
-│   ├── file.png       # File collectible
-│   ├── virus.png      # Virus obstacle
-│   ├── octagon.png    # Octagon obstacle
-│   └── UF game tune.mp3 # Background music
-└── README.txt         # Original readme
-```
+### Play the Game
+🎮 **[Play UF Runner Now](https://wearenextgen.github.io/UntitledGame/)**
+
+Simply click the link above to start playing immediately in your browser!
 
 ## 🎯 Game Mechanics
 
@@ -165,18 +153,6 @@ UntitledGame/
 - **Event-based**: Triggers on game events
 - **Low Volume**: Non-intrusive design
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## 🙏 Acknowledgments
 
 - **Assets**: Custom designed game assets
@@ -185,7 +161,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 📞 Support
 
-For questions, issues, or contributions, please open an issue on GitHub or contact the development team.
+For questions or issues, please contact the development team.
 
 ---
 
