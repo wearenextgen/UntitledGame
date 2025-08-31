@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>UF Runner - Horizontal</title>
+  <title>Untitled Game</title>
   <style>
     html, body {
       margin: 0;
@@ -301,38 +301,55 @@
 
     @media (max-width: 767px) {
       #hud {
-        font-size: 14px;
-        padding: 12px 20px;
+        font-size: 12px;
+        padding: 8px 12px;
+        top: 10px;
+        left: 10px;
+      }
+      
+      #volume-control {
+        font-size: 12px;
+        padding: 8px 12px;
+        top: 10px;
+        right: 10px;
       }
       
       .controls-hint {
-        font-size: 12px;
-        padding: 8px 16px;
+        font-size: 10px;
+        padding: 6px 12px;
+        bottom: 10px;
       }
 
       .start-content {
-        padding: 30px 20px;
-        margin: 20px;
+        padding: 20px 15px;
+        margin: 10px;
+        max-width: 90%;
       }
 
       .start-content h1 {
-        font-size: 28px;
+        font-size: 24px;
       }
 
       .start-content p {
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .controls-section {
-        padding: 15px;
+        padding: 12px;
+        margin: 15px 0;
       }
 
       .controls-section h3 {
-        font-size: 16px;
+        font-size: 14px;
       }
 
       .control-item {
-        font-size: 14px;
+        font-size: 12px;
+      }
+
+      .start-btn {
+        padding: 12px 24px;
+        font-size: 16px;
       }
     }
   </style>
@@ -355,7 +372,7 @@
     
     <div id="start-screen">
       <div class="start-content">
-        <h1>UF Runner</h1>
+        <h1>Untitled Game</h1>
         <p>Collect items, avoid obstacles, and achieve the highest score!</p>
         
         <div class="controls-section">
@@ -1200,7 +1217,7 @@
 
       } else {
         // Fallback colored rectangle if image fails to load
-        ctx.fillStyle = player.invincible ? '#FFD700' : '#4a90e2';
+        ctx.fillStyle = '#4a90e2';
         ctx.fillRect(player.x - 18, getRowY(player.row) - 18, 36, 36); // 40% smaller fallback
       }
       

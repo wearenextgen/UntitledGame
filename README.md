@@ -1,4 +1,4 @@
-# UF Runner - Endless Runner Game
+# Untitled Game
 
 A modern, responsive endless runner game built with HTML5 Canvas and JavaScript, featuring smooth physics, beautiful animations, and cross-platform controls.
 
@@ -79,7 +79,7 @@ The game can be played directly from the repository or hosted on any web server.
 - **Responsive Design**: Works on all device sizes
 
 ### Play the Game
-🎮 **[Play UF Runner Now](https://wearenextgen.github.io/UntitledGame/)**
+🎮 **[Play Untitled Game Now](https://wearenextgen.github.io/UntitledGame/)**
 
 Simply click the link above to start playing immediately in your browser!
 
@@ -167,4 +167,4 @@ For questions or issues, please contact the development team.
 
 ---
 
-**Enjoy playing UF Runner!** 🎮✨
+**Enjoy playing Untitled Game!** 🎮✨
