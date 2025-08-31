@@ -463,8 +463,8 @@
     canvas.height = height * dpr;
     ctx.scale(dpr, dpr);
     
-    // Adjust row height based on screen size
-    ROW_HEIGHT = Math.max(80, Math.min(200, height / 4));
+    // Adjust row height based on screen size - use full screen
+    ROW_HEIGHT = height / 3; // Use full screen height divided by 3 rows
     
     console.log('Canvas resized to:', width, 'x', height, 'Row height:', ROW_HEIGHT);
   }
@@ -487,8 +487,8 @@
   const JUMP_VELOCITY = -0.4; // Adjusted for much lighter gravity
   const SPACE_VELOCITY = -0.6; // Adjusted for much lighter gravity
   const MOVE_SPEED = 35; // Horizontal movement speed (7x faster)
-  const MIN_X = 50; // Minimum X position (left boundary)
-  const MAX_X = 300; // Maximum X position (right boundary)
+  const MIN_X = 80; // Minimum X position (left boundary)
+  const MAX_X = 400; // Maximum X position (right boundary)
   
   // Performance constants
   const MAX_PARTICLES = 50; // Reduced for better performance
@@ -957,7 +957,8 @@
       // Coin collection
       for (let i = coins.length - 1; i >= 0; i--) {
         const coin = coins[i];
-        const coinScale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * 0.87; // CD 15% bigger, others 10% bigger
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const coinScale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * baseScale * 0.87; // CD 15% bigger, others 10% bigger
         const coinWidth = 50 * coinScale * 2.0; // Larger collision box
         const coinHeight = 50 * coinScale * 2.0; // Larger collision box
         
@@ -999,7 +1000,7 @@
       // Obstacle collision
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
-        const obstacleScale = (obstacle.type === 'virus' ? 0.06 : 0.08) * 0.76; // 10% bigger
+        const obstacleScale = (obstacle.type === 'virus' ? 0.06 : 0.08) * baseScale * 0.76; // 10% bigger
         const obstacleWidth = 50 * obstacleScale * 1.1;
         const obstacleHeight = 50 * obstacleScale * 1.1;
         
@@ -1140,7 +1141,8 @@
       coins.forEach(coin => {
         const img = IM[coin.type];
         if (img && img.width > 0) {
-          const scale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * 0.87; // CD 15% bigger, others 10% bigger
+          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+          const scale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * baseScale * 0.87; // CD 15% bigger, others 10% bigger
           const width = img.width * scale;
           const height = img.height * scale;
           ctx.drawImage(img, coin.x - width / 2, getRowY(coin.row) - height / 2, width, height);
@@ -1155,7 +1157,8 @@
       obstacles.forEach(obstacle => {
         const img = IM[obstacle.type];
         if (img && img.width > 0) {
-          const scale = (obstacle.type === 'virus' ? 0.06 : 0.08) * 0.76; // 10% bigger
+          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+          const scale = (obstacle.type === 'virus' ? 0.06 : 0.08) * baseScale * 0.76; // 10% bigger
           const width = img.width * scale;
           const height = img.height * scale;
           ctx.drawImage(img, obstacle.x - width / 2, getRowY(obstacle.row) - height / 2, width, height);
@@ -1168,54 +1171,61 @@
       
       // Draw bonuses
       bonuses.forEach(bonus => {
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const size = 40 * baseScale;
         ctx.fillStyle = '#FFD700'; // Gold color
-        ctx.fillRect(bonus.x - 20, getRowY(bonus.row) - 20, 40, 40);
+        ctx.fillRect(bonus.x - size/2, getRowY(bonus.row) - size/2, size, size);
         ctx.fillStyle = '#FFA500'; // Orange text
-        ctx.font = 'bold 12px Arial';
+        ctx.font = `bold ${12 * baseScale}px Arial`;
         ctx.textAlign = 'center';
-        ctx.fillText('x2', bonus.x, getRowY(bonus.row) + 4);
+        ctx.fillText('x2', bonus.x, getRowY(bonus.row) + 4 * baseScale);
       });
       
       // Draw slomos
       slomos.forEach(slomo => {
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const size = 40 * baseScale;
         ctx.fillStyle = '#00FFFF'; // Cyan color
-        ctx.fillRect(slomo.x - 20, getRowY(slomo.row) - 20, 40, 40);
+        ctx.fillRect(slomo.x - size/2, getRowY(slomo.row) - size/2, size, size);
         ctx.fillStyle = '#0000FF'; // Blue text
-        ctx.font = 'bold 12px Arial';
+        ctx.font = `bold ${12 * baseScale}px Arial`;
         ctx.textAlign = 'center';
-        ctx.fillText('SLOW', slomo.x, getRowY(slomo.row) + 4);
+        ctx.fillText('SLOW', slomo.x, getRowY(slomo.row) + 4 * baseScale);
       });
       
       // Draw power-ups
       powerUps.forEach(powerUp => {
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const size = 40 * baseScale;
         if (powerUp.type === 'star') {
           ctx.fillStyle = '#FFD700'; // Gold
-          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillRect(powerUp.x - size/2, getRowY(powerUp.row) - size/2, size, size);
           ctx.fillStyle = '#FFA500';
-          ctx.font = 'bold 12px Arial';
+          ctx.font = `bold ${12 * baseScale}px Arial`;
           ctx.textAlign = 'center';
-          ctx.fillText('★', powerUp.x, getRowY(powerUp.row) + 4);
+          ctx.fillText('★', powerUp.x, getRowY(powerUp.row) + 4 * baseScale);
         } else if (powerUp.type === 'speed') {
           ctx.fillStyle = '#FF6B6B'; // Red
-          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillRect(powerUp.x - size/2, getRowY(powerUp.row) - size/2, size, size);
           ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 12px Arial';
+          ctx.font = `bold ${12 * baseScale}px Arial`;
           ctx.textAlign = 'center';
-          ctx.fillText('⚡', powerUp.x, getRowY(powerUp.row) + 4);
+          ctx.fillText('⚡', powerUp.x, getRowY(powerUp.row) + 4 * baseScale);
         } else if (powerUp.type === 'doubleJump') {
           ctx.fillStyle = '#4ECDC4'; // Teal
-          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillRect(powerUp.x - size/2, getRowY(powerUp.row) - size/2, size, size);
           ctx.fillStyle = '#FFFFFF';
-          ctx.font = 'bold 12px Arial';
+          ctx.font = `bold ${12 * baseScale}px Arial`;
           ctx.textAlign = 'center';
-          ctx.fillText('2×', powerUp.x, getRowY(powerUp.row) + 4);
+          ctx.fillText('2×', powerUp.x, getRowY(powerUp.row) + 4 * baseScale);
         }
       });
       
       // Draw player
       const img = IM.folder;
       if (img && img.width > 0) {
-        const scale = 0.15 * 0.6; // 40% smaller
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const scale = 0.15 * baseScale * 0.6; // 40% smaller
         const width = img.width * scale;
         const height = img.height * scale;
         
