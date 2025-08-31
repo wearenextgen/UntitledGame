@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UF Runner - Horizontal</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    #wrap {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      background: url('new assets/background.png') no-repeat center center;
+      background-size: cover;
+      display: block;
+    }
+
+    #hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(15px);
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #hud span {
+      margin-right: 20px;
+      font-weight: 600;
+      color: #007AFF;
+    }
+    
+    #volume-control {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(15px);
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #volume-slider {
+      width: 80px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(0, 122, 255, 0.2);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    #volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #007AFF;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    #volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #007AFF;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(5px);
+    }
+
+    .game-over {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(20px);
+    }
+
+    .btn {
+      background: #007AFF;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
+    .btn:hover {
+      background: #0056CC;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
+    }
+
+    h1 {
+      color: #333;
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+    }
+
+    p {
+      color: #666;
+      font-size: 16px;
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+
+    .controls-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #666;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (min-width: 768px) {
+      #hud {
+        font-size: 18px;
+        padding: 20px 30px;
+      }
+      
+      .controls-hint {
+        font-size: 16px;
+        padding: 12px 24px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      #hud {
+        font-size: 14px;
+        padding: 12px 20px;
+      }
+      
+      .controls-hint {
+        font-size: 12px;
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+<div id="hud">
+      <span>Points: <span id="score">0</span></span>
+      <span>Multiplier: <span id="multiplier">1x</span></span>
+</div>
+
+<div id="volume-control">
+      <span>🔊</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="50">
+      <span id="volume-value">50%</span>
+      <button id="music-toggle" style="margin-left: 10px; padding: 4px 8px; border: none; background: #007AFF; color: white; border-radius: 4px; cursor: pointer; font-size: 12px;">▶️</button>
+</div>
+    
+    <canvas id="game"></canvas>
+    
+        <div class="controls-hint">
+      <strong>Desktop:</strong> Up/Space to jump, Down to descend, Left/Right to move
+</div>
+    
+<div id="overlay">
+      <div class="game-over">
+        <h1>Game Over!</h1>
+        <p>Final Points: <span id="finalScore">0</span></p>
+
+        <button id="restart" class="btn">Play Again</button>
+      </div>
+    </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+
+  // Full screen responsive canvas
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Fallback to window dimensions if canvas rect is 0
+    const width = rect.width || window.innerWidth;
+    const height = rect.height || window.innerHeight;
+    
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+    
+    // Adjust row height based on screen size
+    ROW_HEIGHT = Math.max(80, Math.min(200, height / 4));
+    
+    console.log('Canvas resized to:', width, 'x', height, 'Row height:', ROW_HEIGHT);
+  }
+  
+  // Initial resize with delay to ensure DOM is ready
+  setTimeout(() => {
+    resizeCanvas();
+  }, 100);
+  
+  // Resize on window resize
+  window.addEventListener('resize', resizeCanvas);
+
+  // Game constants - responsive values
+  let ROW_HEIGHT = 120;
+  let ROWS = 3;
+  const START_SPEED = 3;
+  const MAX_SPEED = 8;
+  const FALL_SPEED = 0.005; // 3x slower gravity for much lighter floating
+  const BOUNCE_FACTOR = 0.3;
+  const JUMP_VELOCITY = -0.4; // Adjusted for much lighter gravity
+  const SPACE_VELOCITY = -0.6; // Adjusted for much lighter gravity
+  const MOVE_SPEED = 35; // Horizontal movement speed (7x faster)
+  const MIN_X = 50; // Minimum X position (left boundary)
+  const MAX_X = 300; // Maximum X position (right boundary)
+  
+  // Performance constants
+  const MAX_PARTICLES = 50; // Reduced for better performance
+  const CLEANUP_DISTANCE = -100;
+
+    // Game state - optimized structure
+    let player = {
+      row: 1,
+      x: 100,
+      velocity: 0,
+      invincible: false,
+      invincibleTime: 0
+    };
+
+    // Game objects - using object pools for better performance
+    let obstacles = [];
+    let coins = [];
+    let bonuses = [];
+    let slomos = [];
+    let powerUps = [];
+    let particleEffects = [];
+    
+    // Game state
+    let speed = START_SPEED;
+    let score = 0;
+    let coinCount = 0;
+    let alive = true;
+    let gameTime = 0;
+    let lastTs = 0;
+    
+    // Power-up states
+    let multiplier = 1;
+    let multiplierTime = 0;
+    let slomoTime = 0;
+    let speedBoostTime = 0;
+    let screenPulse = 0;
+    
+    // Spawn timers
+    let lastSpawn = 0;
+    let lastCoinSpawn = 0;
+    
+    // Perfect run system
+    let perfectRunStreak = 0;
+    let lastMissTime = 0;
+    let perfectRunBonus = 0;
+    let goodObjectsCaught = 0;
+    let goodObjectsMissed = 0;
+
+    // Asset management
+  const IM = {};
+    let loadedImages = 0;
+    const totalImages = 6;
+
+    // Simplified particle system for better performance
+    function createParticle() {
+      return {
+        x: 0, y: 0, vx: 0, vy: 0, life: 0, decay: 0, color: '#000', size: 1
+      };
+    }
+    
+    function createFallbackImage(color, size = 50) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, size, size);
+      return canvas;
+    }
+
+    function loadAssets() {
+      const assets = [
+        { key: 'folder', src: 'new assets/folder.png', fallback: '#4a90e2' },
+        { key: 'cd', src: 'new assets/CD.png', fallback: '#ff6b6b' },
+        { key: 'hd', src: 'new assets/HD.png', fallback: '#4ecdc4' },
+        { key: 'file', src: 'new assets/file.png', fallback: '#45b7d1' },
+        { key: 'virus', src: 'new assets/virus.png', fallback: '#ff4757' },
+        { key: 'octagon', src: 'new assets/octagon.png', fallback: '#95a5a6' }
+      ];
+
+      console.log('Loading assets...', assets.length, 'total images:', totalImages);
+      assets.forEach(asset => {
+        const img = new Image();
+        img.onload = () => {
+          console.log('Loaded:', asset.key, asset.src);
+          IM[asset.key] = img;
+          loadedImages++;
+          if (loadedImages === totalImages) {
+            console.log('All assets loaded, starting game...');
+            start();
+          }
+        };
+        img.onerror = () => {
+          console.log('Failed to load:', asset.key, asset.src);
+          IM[asset.key] = createFallbackImage(asset.fallback);
+          loadedImages++;
+          if (loadedImages === totalImages) {
+            console.log('All assets loaded (with fallbacks), starting game...');
+            start();
+          }
+        };
+        img.src = asset.src;
+      });
+    }
+
+  function reset() {
+    // Reset player
+    player = {
+      row: 1,
+      x: 100,
+      velocity: 0,
+      invincible: false,
+      invincibleTime: 0
+    };
+    
+    // Clear all arrays
+    obstacles.length = 0;
+    coins.length = 0;
+    bonuses.length = 0;
+    slomos.length = 0;
+    powerUps.length = 0;
+    particleEffects.length = 0;
+    
+    // Reset game state
+    speed = START_SPEED;
+    score = 0;
+    coinCount = 0;
+    alive = true;
+    gameTime = 0;
+    
+    // Reset power-ups
+    multiplier = 1;
+    multiplierTime = 0;
+    slomoTime = 0;
+    speedBoostTime = 0;
+    screenPulse = 0;
+    
+    // Reset timers
+    lastSpawn = 0;
+    lastCoinSpawn = 0;
+    
+    // Reset perfect run
+    perfectRunStreak = 0;
+    lastMissTime = 0;
+    perfectRunBonus = 0;
+    goodObjectsCaught = 0;
+    goodObjectsMissed = 0;
+    
+    updateHUD();
+  }
+
+    function getRowY(row) {
+      const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
+      return row * ROW_HEIGHT + ROW_HEIGHT / 2;
+    }
+
+      function spawnCoins() {
+    const types = ['cd', 'file', 'hd', 'file', 'file'];
+    const positions = [];
+    const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+    
+    for (let i = 0; i < 3; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      let row = Math.floor(Math.random() * 3);
+      let x = canvasWidth + 50 + (i * 100);
+      
+      // Check for overlap with existing objects
+      let attempts = 0;
+      while (attempts < 10) {
+        let overlap = false;
+        for (let pos of positions) {
+          if (Math.abs(pos.x - x) < 80 && pos.row === row) {
+            overlap = true;
+            break;
+          }
+        }
+        if (!overlap) break;
+        row = Math.floor(Math.random() * 3);
+        x = canvas.width + 50 + (i * 100) + Math.random() * 50;
+        attempts++;
+      }
+      
+      positions.push({x: x, row: row});
+      coins.push({
+        row: row,
+        x: x,
+        type: type
+      });
+    }
+}
+
+  function spawnBonus() {
+    const row = Math.floor(Math.random() * 3);
+    const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+    bonuses.push({
+      row: row,
+      x: canvasWidth + 50,
+      type: 'bonus'
+    });
+  }
+
+  function spawnSlomo() {
+    const row = Math.floor(Math.random() * 3);
+    const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+    slomos.push({
+      row: row,
+      x: canvasWidth + 50,
+      type: 'slomo'
+    });
+  }
+
+  function spawnPowerUp() {
+    const row = Math.floor(Math.random() * 3);
+    const types = ['star', 'speed', 'doubleJump'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+    powerUps.push({
+      row: row,
+      x: canvasWidth + 50,
+      type: type
+    });
+  }
+
+  function spawnObstacle() {
+      const obstacleCount = Math.random() < 0.3 ? 0 : Math.random() < 0.5 ? 1 : 2;
+      const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+      
+      for (let i = 0; i < obstacleCount; i++) {
+        const row = Math.floor(Math.random() * 3);
+        const types = ['virus', 'octagon'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        obstacles.push({
+          row: row,
+          x: canvasWidth + 50 + (i * 80),
+          type: type
+        });
+    }
+  }
+
+  function updateHUD() {
+    document.getElementById('score').textContent = Math.floor(score);
+    document.getElementById('multiplier').textContent = multiplier + 'x';
+    
+    // Debug: Log current values every 5 seconds
+    if (Math.floor(gameTime / 5000) % 2 === 0 && gameTime > 0) {
+      console.log('Current game state - Score:', score, 'Coins:', coinCount, 'Multiplier:', multiplier);
+    }
+  }
+
+  // Optimized collision detection using AABB with larger margin
+  function rectsOverlap(a, b, margin = 15) {
+    return a.x - margin < b.x + b.w && 
+           a.x + a.w + margin > b.x && 
+           a.y - margin < b.y + b.h && 
+           a.y + a.h + margin > b.y;
+  }
+  
+  
+
+  function start() {
+    reset();
+    lastTs = performance.now();
+    requestAnimationFrame(loop);
+    
+    // Start music when game starts
+    if (backgroundMusic && backgroundMusic.paused) {
+      backgroundMusic.play().then(() => {
+        console.log('Music started with game');
+        document.getElementById('music-toggle').textContent = '⏸️';
+      }).catch(e => {
+        console.log('Music start failed with game:', e);
+      });
+    }
+  }
+
+    // Optimized game loop
+  function loop(ts) {
+    const dt = Math.min(16.67, ts - lastTs); // Cap at 60 FPS
+    lastTs = ts;
+    
+    if (alive) tick(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  function tick(dt) {
+    gameTime += dt;
+    speed = Math.min(MAX_SPEED, speed + 0.01 * dt);
+    
+    // Optimized physics with better bounds checking
+    player.velocity += FALL_SPEED * (dt / 16);
+    player.row += player.velocity;
+    
+    // Bounce off boundaries with improved physics
+    if (player.row >= ROWS - 1) {
+      player.row = ROWS - 1;
+      player.velocity = -player.velocity * BOUNCE_FACTOR;
+      
+      // Stop bouncing if velocity is too small
+      if (Math.abs(player.velocity) < 0.05) {
+        player.velocity = 0;
+      }
+    }
+    
+    if (player.row <= 0) {
+      player.row = 0;
+      player.velocity = -player.velocity * BOUNCE_FACTOR;
+    }
+    
+    // Snap to nearest row when very slow for better control
+    if (Math.abs(player.velocity) < 0.02 && Math.abs(player.row - Math.round(player.row)) < 0.1) {
+      player.row = Math.round(player.row);
+      player.velocity = 0;
+    }
+      
+      // Update power-up timers
+      if (multiplierTime > 0) {
+        multiplierTime -= dt;
+        if (multiplierTime <= 0) {
+          multiplier = 1;
+          screenPulse = 0;
+        }
+      }
+      
+      if (slomoTime > 0) {
+        slomoTime -= dt;
+      }
+      
+      if (player.invincibleTime > 0) {
+        player.invincibleTime -= dt;
+        if (player.invincibleTime <= 0) {
+          player.invincible = false;
+        }
+      }
+      
+      if (speedBoostTime > 0) {
+        speedBoostTime -= dt;
+      }
+      
+      // Update screen pulse
+      if (screenPulse > 0) {
+        screenPulse -= dt * 0.01; // Fade out over time
+      }
+      
+      // Perfect run streak - requires 15 good objects in a row
+      if (goodObjectsCaught >= 15) {
+        perfectRunBonus += 10;
+        score += 10;
+        console.log('Perfect run bonus: +10 points for 15 good objects in a row, total score:', score);
+        createPixelDust(player.x, getRowY(player.row), '#FFD700', 15);
+        goodObjectsCaught = 0; // Reset counter after bonus
+      }
+      
+      // Spawning
+      if (gameTime - lastSpawn > Math.max(1200, 2500 - score * 0.15)) {
+        spawnObstacle();
+        lastSpawn = gameTime;
+      }
+      
+      if (gameTime - lastCoinSpawn > 1500) {
+        spawnCoins();
+        lastCoinSpawn = gameTime;
+      }
+      
+      // Spawn bonus occasionally
+      if (Math.random() < 0.001) {
+        spawnBonus();
+      }
+      
+      // Spawn slomo occasionally
+      if (Math.random() < 0.001) {
+        spawnSlomo();
+      }
+      
+      // Spawn power-ups occasionally
+      if (Math.random() < 0.0008) {
+        spawnPowerUp();
+      }
+      
+      // Optimized object movement and cleanup
+      const currentSpeed = slomoTime > 0 ? speed * 0.5 : speedBoostTime > 0 ? speed * 1.5 : speed;
+      
+      // Move and cleanup objects efficiently
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        obstacles[i].x -= currentSpeed;
+        if (obstacles[i].x < CLEANUP_DISTANCE) obstacles.splice(i, 1);
+      }
+      
+      for (let i = coins.length - 1; i >= 0; i--) {
+        coins[i].x -= currentSpeed;
+        if (coins[i].x < CLEANUP_DISTANCE) {
+          // Missed a good object - reset streak
+          goodObjectsCaught = 0;
+          console.log('Missed good object (coin), streak reset');
+          coins.splice(i, 1);
+        }
+      }
+      
+      for (let i = bonuses.length - 1; i >= 0; i--) {
+        bonuses[i].x -= currentSpeed;
+        if (bonuses[i].x < CLEANUP_DISTANCE) {
+          // Missed a good object - reset streak
+          goodObjectsCaught = 0;
+          console.log('Missed good object (bonus), streak reset');
+          bonuses.splice(i, 1);
+        }
+      }
+      
+      for (let i = slomos.length - 1; i >= 0; i--) {
+        slomos[i].x -= currentSpeed;
+        if (slomos[i].x < CLEANUP_DISTANCE) {
+          // Missed a good object - reset streak
+          goodObjectsCaught = 0;
+          console.log('Missed good object (slomo), streak reset');
+          slomos.splice(i, 1);
+        }
+      }
+      
+      for (let i = powerUps.length - 1; i >= 0; i--) {
+        powerUps[i].x -= currentSpeed;
+        if (powerUps[i].x < CLEANUP_DISTANCE) {
+          // Missed a good object - reset streak
+          goodObjectsCaught = 0;
+          console.log('Missed good object (power-up), streak reset');
+          powerUps.splice(i, 1);
+        }
+      }
+      
+      // Simplified particle system
+      for (let i = particleEffects.length - 1; i >= 0; i--) {
+        const particle = particleEffects[i];
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.life -= particle.decay;
+        
+        if (particle.life <= 0) {
+          particleEffects.splice(i, 1);
+        }
+      }
+      
+      // Limit particle count for performance
+      if (particleEffects.length > MAX_PARTICLES) {
+        particleEffects.splice(0, particleEffects.length - MAX_PARTICLES);
+      }
+
+      // Collision detection with larger hitbox
+      const playerWidth = 50; // Larger hitbox for better collection
+      const playerHeight = 50; // Larger hitbox for better collection
+      
+      const playerBox = {
+        x: player.x - playerWidth / 2,
+        y: getRowY(player.row) - playerHeight / 2,
+        w: playerWidth,
+        h: playerHeight
+      };
+
+      // Coin collection
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const coin = coins[i];
+        const coinScale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * 0.87; // CD 15% bigger, others 10% bigger
+        const coinWidth = 50 * coinScale * 2.0; // Larger collision box
+        const coinHeight = 50 * coinScale * 2.0; // Larger collision box
+        
+        const coinBox = {
+          x: coin.x - coinWidth / 2,
+          y: getRowY(coin.row) - coinHeight / 2,
+          w: coinWidth,
+          h: coinHeight
+        };
+        
+        if (rectsOverlap(playerBox, coinBox)) {
+          if (coin.type === 'cd') {
+            coinCount += 5;
+            score += 5;
+            goodObjectsCaught++;
+            console.log('Collected CD: +5 points, total score:', score, 'total coins:', coinCount, 'good objects caught:', goodObjectsCaught);
+            playSound('cd');
+            createPixelDust(coin.x, getRowY(coin.row), '#ff6b6b', 12);
+          } else if (coin.type === 'hd') {
+            coinCount += 10;
+            score += 10;
+            goodObjectsCaught++;
+            console.log('Collected HD: +10 points, total score:', score, 'total coins:', coinCount, 'good objects caught:', goodObjectsCaught);
+            playSound('hd');
+            createPixelDust(coin.x, getRowY(coin.row), '#4ecdc4', 15);
+          } else if (coin.type === 'file') {
+            coinCount += 1;
+            score += 1;
+            goodObjectsCaught++;
+            console.log('Collected File: +1 point, total score:', score, 'total coins:', coinCount, 'good objects caught:', goodObjectsCaught);
+            playSound('file');
+            createPixelDust(coin.x, getRowY(coin.row), '#45b7d1', 8);
+          }
+          coins.splice(i, 1);
+          break; // Exit loop after collecting one coin to prevent multiple collections
+        }
+      }
+
+      // Obstacle collision
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obstacle = obstacles[i];
+        const obstacleScale = (obstacle.type === 'virus' ? 0.06 : 0.08) * 0.76; // 10% bigger
+        const obstacleWidth = 50 * obstacleScale * 1.1;
+        const obstacleHeight = 50 * obstacleScale * 1.1;
+        
+        const obstacleBox = {
+          x: obstacle.x - obstacleWidth / 2,
+          y: getRowY(obstacle.row) - obstacleHeight / 2,
+          w: obstacleWidth,
+          h: obstacleHeight
+        };
+        
+        if (rectsOverlap(playerBox, obstacleBox)) {
+          if (player.invincible) {
+            // Invincible - destroy obstacle
+            obstacles.splice(i, 1);
+            createPixelDust(obstacle.x, getRowY(obstacle.row), '#FFD700', 8);
+          } else if (obstacle.type === 'octagon') {
+            // Octagon = game over, no points lost
+            alive = false;
+            document.getElementById('finalScore').textContent = Math.floor(score);
+            document.getElementById('overlay').style.display = 'flex';
+          } else if (obstacle.type === 'virus') {
+            score = Math.max(0, score - 10);
+            obstacles.splice(i, 1);
+            lastMissTime = gameTime; // Reset perfect run streak
+            perfectRunStreak = 0;
+            playSound('virus');
+            createPixelDust(obstacle.x, getRowY(obstacle.row), '#ff4757', 10);
+          }
+        }
+      }
+
+      // Bonus collection
+      for (let i = bonuses.length - 1; i >= 0; i--) {
+        const bonus = bonuses[i];
+        const bonusWidth = 40;
+        const bonusHeight = 40;
+        
+        const bonusBox = {
+          x: bonus.x - bonusWidth / 2,
+          y: getRowY(bonus.row) - bonusHeight / 2,
+          w: bonusWidth,
+          h: bonusHeight
+        };
+        
+        if (rectsOverlap(playerBox, bonusBox)) {
+          score += 20; // Reduced bonus points
+          coinCount += 5;
+          goodObjectsCaught++;
+          multiplier = 2; // Reduced to x2 multiplier
+          multiplierTime = 3000; // 3 seconds (reduced duration)
+          screenPulse = 1; // Start screen pulse
+          console.log('Collected Bonus: +20 points, total score:', score, 'good objects caught:', goodObjectsCaught);
+          playSound('boost');
+          createPixelDust(bonus.x, getRowY(bonus.row), '#FFD700', 25); // Gold particles
+          bonuses.splice(i, 1);
+          break; // Exit loop after collecting one bonus
+        }
+      }
+
+      // Slomo collection
+      for (let i = slomos.length - 1; i >= 0; i--) {
+        const slomo = slomos[i];
+        const slomoWidth = 40;
+        const slomoHeight = 40;
+        
+        const slomoBox = {
+          x: slomo.x - slomoWidth / 2,
+          y: getRowY(slomo.row) - slomoHeight / 2,
+          w: slomoWidth,
+          h: slomoHeight
+        };
+        
+        if (rectsOverlap(playerBox, slomoBox)) {
+          slomoTime = 3000; // 3 seconds of slomo
+          goodObjectsCaught++;
+          console.log('Collected Slomo power-up: Slow motion for 3 seconds, good objects caught:', goodObjectsCaught);
+          playSound('boost');
+          createPixelDust(slomo.x, getRowY(slomo.row), '#00FFFF', 20); // Cyan particles
+          slomos.splice(i, 1);
+          break; // Exit loop after collecting one slomo
+        }
+      }
+
+      // Power-up collection
+      for (let i = powerUps.length - 1; i >= 0; i--) {
+        const powerUp = powerUps[i];
+        const powerUpWidth = 40;
+        const powerUpHeight = 40;
+        
+        const powerUpBox = {
+          x: powerUp.x - powerUpWidth / 2,
+          y: getRowY(powerUp.row) - powerUpHeight / 2,
+          w: powerUpWidth,
+          h: powerUpHeight
+        };
+        
+        if (rectsOverlap(playerBox, powerUpBox)) {
+          if (powerUp.type === 'star') {
+            player.invincible = true;
+            player.invincibleTime = 5000; // 5 seconds
+            goodObjectsCaught++;
+            console.log('Collected Star power-up: Invincibility for 5 seconds, good objects caught:', goodObjectsCaught);
+            playSound('boost');
+            createPixelDust(powerUp.x, getRowY(powerUp.row), '#FFD700', 20);
+          } else if (powerUp.type === 'speed') {
+            speedBoostTime = 4000; // 4 seconds
+            goodObjectsCaught++;
+            console.log('Collected Speed power-up: Speed boost for 4 seconds, good objects caught:', goodObjectsCaught);
+            playSound('boost');
+            createPixelDust(powerUp.x, getRowY(powerUp.row), '#FF6B6B', 20);
+          } else if (powerUp.type === 'doubleJump') {
+            goodObjectsCaught++;
+            console.log('Collected Double Jump power-up, good objects caught:', goodObjectsCaught);
+            playSound('boost');
+            createPixelDust(powerUp.x, getRowY(powerUp.row), '#4ECDC4', 20);
+          }
+          powerUps.splice(i, 1);
+          break; // Exit loop after collecting one power-up
+      }
+    }
+
+    updateHUD();
+  }
+
+  function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Screen pulse effect for bonus
+      if (screenPulse > 0) {
+        ctx.save();
+        ctx.globalAlpha = screenPulse * 0.3;
+        ctx.fillStyle = '#FFD700';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      }
+      
+      // Draw coins
+      coins.forEach(coin => {
+        const img = IM[coin.type];
+        if (img && img.width > 0) {
+          const scale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * 0.87; // CD 15% bigger, others 10% bigger
+          const width = img.width * scale;
+          const height = img.height * scale;
+          ctx.drawImage(img, coin.x - width / 2, getRowY(coin.row) - height / 2, width, height);
+        } else {
+          // Fallback colored rectangles if image fails to load
+          ctx.fillStyle = coin.type === 'cd' ? '#ff6b6b' : coin.type === 'hd' ? '#4ecdc4' : '#45b7d1';
+          ctx.fillRect(coin.x - 22, getRowY(coin.row) - 22, 44, 44); // CD 15% bigger fallback
+        }
+      });
+      
+      // Draw obstacles
+      obstacles.forEach(obstacle => {
+        const img = IM[obstacle.type];
+        if (img && img.width > 0) {
+          const scale = (obstacle.type === 'virus' ? 0.06 : 0.08) * 0.76; // 10% bigger
+          const width = img.width * scale;
+          const height = img.height * scale;
+          ctx.drawImage(img, obstacle.x - width / 2, getRowY(obstacle.row) - height / 2, width, height);
+        } else {
+          // Fallback colored rectangles if image fails to load
+          ctx.fillStyle = obstacle.type === 'virus' ? '#ff4757' : '#95a5a6';
+          ctx.fillRect(obstacle.x - 15, getRowY(obstacle.row) - 15, 30, 30); // 10% bigger fallback
+        }
+      });
+      
+      // Draw bonuses
+      bonuses.forEach(bonus => {
+        ctx.fillStyle = '#FFD700'; // Gold color
+        ctx.fillRect(bonus.x - 20, getRowY(bonus.row) - 20, 40, 40);
+        ctx.fillStyle = '#FFA500'; // Orange text
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('x2', bonus.x, getRowY(bonus.row) + 4);
+      });
+      
+      // Draw slomos
+      slomos.forEach(slomo => {
+        ctx.fillStyle = '#00FFFF'; // Cyan color
+        ctx.fillRect(slomo.x - 20, getRowY(slomo.row) - 20, 40, 40);
+        ctx.fillStyle = '#0000FF'; // Blue text
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('SLOW', slomo.x, getRowY(slomo.row) + 4);
+      });
+      
+      // Draw power-ups
+      powerUps.forEach(powerUp => {
+        if (powerUp.type === 'star') {
+          ctx.fillStyle = '#FFD700'; // Gold
+          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillStyle = '#FFA500';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('★', powerUp.x, getRowY(powerUp.row) + 4);
+        } else if (powerUp.type === 'speed') {
+          ctx.fillStyle = '#FF6B6B'; // Red
+          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚡', powerUp.x, getRowY(powerUp.row) + 4);
+        } else if (powerUp.type === 'doubleJump') {
+          ctx.fillStyle = '#4ECDC4'; // Teal
+          ctx.fillRect(powerUp.x - 20, getRowY(powerUp.row) - 20, 40, 40);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('2×', powerUp.x, getRowY(powerUp.row) + 4);
+        }
+      });
+      
+      // Draw player
+      const img = IM.folder;
+      if (img && img.width > 0) {
+        const scale = 0.15 * 0.6; // 40% smaller
+        const width = img.width * scale;
+        const height = img.height * scale;
+        
+        // Invincibility effect
+        if (player.invincible) {
+    ctx.save();
+          ctx.globalAlpha = 0.7 + Math.sin(gameTime * 0.01) * 0.3;
+    }
+        
+        ctx.drawImage(img, player.x - width / 2, getRowY(player.row) - height / 2, width, height);
+        
+        if (player.invincible) {
+    ctx.restore();
+        }
+        
+
+      } else {
+        // Fallback colored rectangle if image fails to load
+        ctx.fillStyle = player.invincible ? '#FFD700' : '#4a90e2';
+        ctx.fillRect(player.x - 18, getRowY(player.row) - 18, 36, 36); // 40% smaller fallback
+      }
+      
+
+      
+            // Draw particle effects
+      particleEffects.forEach(particle => {
+        ctx.save();
+        ctx.globalAlpha = particle.life;
+        ctx.fillStyle = particle.color;
+        
+        if (particle.type === 'sparkle') {
+          // Draw sparkle as a star shape
+          const size = particle.size;
+          ctx.beginPath();
+          ctx.moveTo(particle.x, particle.y - size);
+          ctx.lineTo(particle.x + size * 0.3, particle.y - size * 0.3);
+          ctx.lineTo(particle.x + size, particle.y);
+          ctx.lineTo(particle.x + size * 0.3, particle.y + size * 0.3);
+          ctx.lineTo(particle.x, particle.y + size);
+          ctx.lineTo(particle.x - size * 0.3, particle.y + size * 0.3);
+          ctx.lineTo(particle.x - size, particle.y);
+          ctx.lineTo(particle.x - size * 0.3, particle.y - size * 0.3);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Draw regular particle as square
+          ctx.fillRect(particle.x, particle.y, particle.size, particle.size);
+        }
+        
+        ctx.restore();
+      });
+
+
+    }
+
+    // Background music and audio system
+    let audioContext = null;
+    let backgroundMusic = null;
+    let musicVolume = 0.5;
+    
+    function initAudio() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('Audio context created successfully');
+        loadBackgroundMusic();
+      } catch (e) {
+        console.log('Audio not supported:', e);
+      }
+    }
+    
+    function loadBackgroundMusic() {
+      backgroundMusic = new Audio('new assets/UF game tune.mp3');
+      backgroundMusic.loop = true;
+      backgroundMusic.volume = musicVolume;
+      backgroundMusic.preload = 'auto';
+      
+      // Add error handling for music loading
+      backgroundMusic.addEventListener('error', (e) => {
+        console.error('Music loading error:', e);
+      });
+      
+      backgroundMusic.addEventListener('canplaythrough', () => {
+        console.log('Music loaded successfully and ready to play');
+        // Update button to show music is ready
+        document.getElementById('music-toggle').textContent = '▶️';
+        // Don't try to autoplay here - wait for user interaction
+      });
+      
+      // Don't try to autoplay immediately - modern browsers block this
+      console.log('Music loaded, waiting for user interaction to start');
+    }
+    
+    function updateMusicVolume(volume) {
+      musicVolume = volume / 100;
+      if (backgroundMusic) {
+        backgroundMusic.volume = musicVolume;
+      }
+      document.getElementById('volume-value').textContent = volume + '%';
+    }
+    
+    function playSound(type) {
+      if (!audioContext) return;
+      
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        let frequency = 440;
+        let duration = 0.1;
+        let volume = 0.03; // Very low volume
+        
+        switch(type) {
+          case 'cd':
+            frequency = 800;
+            duration = 0.15;
+            break;
+          case 'hd':
+            frequency = 600;
+            duration = 0.2;
+            break;
+          case 'file':
+            frequency = 1000;
+            duration = 0.1;
+            break;
+          case 'virus':
+            frequency = 200;
+            duration = 0.2;
+            break;
+          case 'boost':
+            frequency = 1200;
+            duration = 0.3;
+            break;
+        }
+        
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        oscillator.type = 'square';
+        
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        // Silently fail if audio context is not available
+      }
+    }
+
+    function createPixelDust(x, y, color, count) {
+      for (let i = 0; i < count && particleEffects.length < MAX_PARTICLES; i++) {
+        const particle = createParticle();
+        particle.x = x + (Math.random() - 0.5) * 20;
+        particle.y = y + (Math.random() - 0.5) * 20;
+        particle.vx = (Math.random() - 0.5) * 4;
+        particle.vy = (Math.random() - 0.5) * 4;
+        particle.life = 1.0;
+        particle.decay = 0.02;
+        particle.color = color;
+        particle.size = Math.random() * 3 + 1;
+        particleEffects.push(particle);
+      }
+    }
+
+    function createSparkles(x, y, count = 8) {
+      for (let i = 0; i < count && particleEffects.length < MAX_PARTICLES; i++) {
+        const particle = createParticle();
+        particle.x = x + (Math.random() - 0.5) * 30;
+        particle.y = y + (Math.random() - 0.5) * 30;
+        particle.vx = (Math.random() - 0.5) * 6;
+        particle.vy = (Math.random() - 0.5) * 6 - 2; // Upward bias
+        particle.life = 1.0;
+        particle.decay = 0.03;
+        particle.color = ['#FFD700', '#FFA500', '#FFFF00', '#FFFFFF'][Math.floor(Math.random() * 4)]; // Gold, orange, yellow, white
+        particle.size = Math.random() * 4 + 2;
+        particle.type = 'sparkle';
+        particleEffects.push(particle);
+      }
+    }
+
+    // Controls
+  window.addEventListener('keydown', (e) => {
+    if (!alive) return;
+      
+      switch(e.code) {
+        case 'ArrowLeft':
+        case 'KeyA':
+          // Move folder left
+          player.x = Math.max(MIN_X, player.x - MOVE_SPEED);
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+        case 'KeyD':
+          // Move folder right
+          player.x = Math.min(MAX_X, player.x + MOVE_SPEED);
+          e.preventDefault();
+          break;
+        case 'ArrowUp':
+        case 'KeyW':
+          player.velocity = JUMP_VELOCITY;
+          createSparkles(player.x, getRowY(player.row));
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+        case 'KeyS':
+          // Down arrow for emergency descent
+          player.velocity = Math.abs(player.velocity) * 0.5;
+          e.preventDefault();
+          break;
+        case 'Space':
+          player.velocity = SPACE_VELOCITY;
+          createSparkles(player.x, getRowY(player.row), 12); // More sparkles for spacebar
+          e.preventDefault();
+          break;
+        case 'KeyT':
+          // Debug: Test points system
+          score += 10;
+          coinCount += 10;
+          console.log('Debug: Added 10 points and coins. Score:', score, 'Coins:', coinCount);
+          e.preventDefault();
+          break;
+      }
+    });
+
+
+
+    // Touch controls for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const minSwipeDistance = 40;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (!alive) return;
+      e.preventDefault();
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+    if (!alive) return;
+      e.preventDefault();
+      
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      
+      if (Math.abs(deltaY) > Math.abs(deltaX)) {
+        if (Math.abs(deltaY) > minSwipeDistance) {
+          if (deltaY < 0) {
+            // Swipe up = jump
+            player.velocity = JUMP_VELOCITY;
+            createSparkles(player.x, getRowY(player.row));
+          } else {
+            // Swipe down = emergency descent
+            player.velocity = Math.abs(player.velocity) * 0.5;
+          }
+        }
+      } else {
+        if (Math.abs(deltaX) > minSwipeDistance) {
+          if (deltaX < 0) {
+            // Swipe left = move folder left
+            player.x = Math.max(MIN_X, player.x - MOVE_SPEED * 2);
+          } else {
+            // Swipe right = move folder right
+            player.x = Math.min(MAX_X, player.x + MOVE_SPEED * 2);
+          }
+        }
+      }
+    });
+
+    // Volume control and music toggle
+    document.getElementById('volume-slider').addEventListener('input', (e) => {
+      updateMusicVolume(parseInt(e.target.value));
+    });
+    
+    document.getElementById('music-toggle').addEventListener('click', () => {
+      if (backgroundMusic) {
+        if (backgroundMusic.paused) {
+          // Resume audio context first if suspended
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+              console.log('Audio context resumed');
+              return backgroundMusic.play();
+            }).catch(e => {
+              console.log('Audio context resume failed:', e);
+              return backgroundMusic.play();
+            });
+          } else {
+            backgroundMusic.play().catch(e => {
+              console.log('Music start failed:', e);
+            });
+          }
+          document.getElementById('music-toggle').textContent = '⏸️';
+        } else {
+          backgroundMusic.pause();
+          document.getElementById('music-toggle').textContent = '▶️';
+        }
+      } else {
+        console.log('Background music not loaded');
+      }
+    });
+    
+    // Restart handlers - music continues playing
+    document.getElementById('restart').addEventListener('click', () => {
+      reset();
+      document.getElementById('overlay').style.display = 'none';
+      // Ensure music keeps playing
+      if (backgroundMusic && backgroundMusic.paused) {
+        backgroundMusic.play().catch(e => console.log('Music restart failed'));
+      }
+    });
+
+    document.getElementById('overlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('overlay')) {
+        reset();
+        document.getElementById('overlay').style.display = 'none';
+        // Ensure music keeps playing
+        if (backgroundMusic && backgroundMusic.paused) {
+          backgroundMusic.play().catch(e => console.log('Music restart failed'));
+        }
+      }
+    });
+
+    // Initialize audio and start loading assets
+    initAudio();
+    loadAssets();
+    
+    // Resume audio context on first user interaction
+    function resumeAudioOnInteraction() {
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume().then(() => {
+          console.log('Audio context resumed on first interaction');
+        });
+      }
+      
+      // Start background music on first interaction
+      if (backgroundMusic && backgroundMusic.paused) {
+        backgroundMusic.play().then(() => {
+          console.log('Background music started on first interaction');
+          document.getElementById('music-toggle').textContent = '⏸️';
+        }).catch(e => {
+          console.log('Background music start failed on first interaction:', e);
+        });
+      }
+      
+      // Remove all listeners after first interaction
+      document.removeEventListener('click', resumeAudioOnInteraction);
+      document.removeEventListener('keydown', resumeAudioOnInteraction);
+      document.removeEventListener('touchstart', resumeAudioOnInteraction);
+    }
+    
+    // Add listeners for first user interaction
+    document.addEventListener('click', resumeAudioOnInteraction);
+    document.addEventListener('keydown', resumeAudioOnInteraction);
+    document.addEventListener('touchstart', resumeAudioOnInteraction);
+  </script>
+</body>
+</html>
