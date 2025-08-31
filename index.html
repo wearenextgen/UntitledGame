@@ -212,11 +212,16 @@
       border: 0.5px solid rgba(0, 0, 0, 0.1);
     }
 
-    .start-content h1 {
-      color: #333;
-      font-size: 36px;
-      font-weight: 600;
+    .logo-container {
       margin: 0 0 24px 0;
+      text-align: center;
+    }
+
+    .game-logo {
+      max-width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
     }
 
     .start-content p {
@@ -315,8 +320,8 @@
         padding: 60px;
       }
 
-      .start-content h1 {
-        font-size: 42px;
+      .game-logo {
+        max-width: 300px;
       }
 
       /* Hide mobile controls on desktop */
@@ -362,8 +367,8 @@
         max-width: 98%;
       }
 
-      .start-content h1 {
-        font-size: 40px;
+      .game-logo {
+        max-width: 250px;
       }
 
       .start-content p {
@@ -425,7 +430,9 @@
     
     <div id="start-screen">
       <div class="start-content">
-        <h1>Untitled Game</h1>
+        <div class="logo-container">
+          <img src="untitledfolders_logo.png" alt="Untitled Folders" class="game-logo">
+        </div>
         <p>Collect items, avoid obstacles, and achieve the highest score!</p>
         
         <div class="controls-section desktop-controls">
