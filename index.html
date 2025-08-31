@@ -478,7 +478,6 @@
   window.addEventListener('resize', resizeCanvas);
 
   // Game constants - responsive values
-  let ROW_HEIGHT = 120;
   let ROWS = 3;
   const START_SPEED = 1.5;
   const MAX_SPEED = 4;
@@ -673,7 +672,7 @@
         }
         if (!overlap) break;
         row = Math.floor(Math.random() * 3);
-        x = canvas.width + 50 + (i * 100) + Math.random() * 50;
+        x = canvasWidth + 50 + (i * 100) + Math.random() * 50;
         attempts++;
       }
       
@@ -957,7 +956,7 @@
       // Coin collection
       for (let i = coins.length - 1; i >= 0; i--) {
         const coin = coins[i];
-        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
         const coinScale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * baseScale * 0.87; // CD 15% bigger, others 10% bigger
         const coinWidth = 50 * coinScale * 2.0; // Larger collision box
         const coinHeight = 50 * coinScale * 2.0; // Larger collision box
@@ -1000,6 +999,7 @@
       // Obstacle collision
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
         const obstacleScale = (obstacle.type === 'virus' ? 0.06 : 0.08) * baseScale * 0.76; // 10% bigger
         const obstacleWidth = 50 * obstacleScale * 1.1;
         const obstacleHeight = 50 * obstacleScale * 1.1;
@@ -1035,8 +1035,9 @@
       // Bonus collection
       for (let i = bonuses.length - 1; i >= 0; i--) {
         const bonus = bonuses[i];
-        const bonusWidth = 40;
-        const bonusHeight = 40;
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
+        const bonusWidth = 40 * baseScale;
+        const bonusHeight = 40 * baseScale;
         
         const bonusBox = {
           x: bonus.x - bonusWidth / 2,
@@ -1063,8 +1064,9 @@
       // Slomo collection
       for (let i = slomos.length - 1; i >= 0; i--) {
         const slomo = slomos[i];
-        const slomoWidth = 40;
-        const slomoHeight = 40;
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
+        const slomoWidth = 40 * baseScale;
+        const slomoHeight = 40 * baseScale;
         
         const slomoBox = {
           x: slomo.x - slomoWidth / 2,
@@ -1087,8 +1089,9 @@
       // Power-up collection
       for (let i = powerUps.length - 1; i >= 0; i--) {
         const powerUp = powerUps[i];
-        const powerUpWidth = 40;
-        const powerUpHeight = 40;
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
+        const powerUpWidth = 40 * baseScale;
+        const powerUpHeight = 40 * baseScale;
         
         const powerUpBox = {
           x: powerUp.x - powerUpWidth / 2,
@@ -1141,7 +1144,7 @@
       coins.forEach(coin => {
         const img = IM[coin.type];
         if (img && img.width > 0) {
-          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
           const scale = (coin.type === 'cd' ? 0.24 : coin.type === 'hd' ? 0.08 : 0.15) * baseScale * 0.87; // CD 15% bigger, others 10% bigger
           const width = img.width * scale;
           const height = img.height * scale;
@@ -1157,7 +1160,7 @@
       obstacles.forEach(obstacle => {
         const img = IM[obstacle.type];
         if (img && img.width > 0) {
-          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
           const scale = (obstacle.type === 'virus' ? 0.06 : 0.08) * baseScale * 0.76; // 10% bigger
           const width = img.width * scale;
           const height = img.height * scale;
@@ -1171,7 +1174,7 @@
       
       // Draw bonuses
       bonuses.forEach(bonus => {
-        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
         const size = 40 * baseScale;
         ctx.fillStyle = '#FFD700'; // Gold color
         ctx.fillRect(bonus.x - size/2, getRowY(bonus.row) - size/2, size, size);
@@ -1183,7 +1186,7 @@
       
       // Draw slomos
       slomos.forEach(slomo => {
-        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
         const size = 40 * baseScale;
         ctx.fillStyle = '#00FFFF'; // Cyan color
         ctx.fillRect(slomo.x - size/2, getRowY(slomo.row) - size/2, size, size);
@@ -1195,7 +1198,7 @@
       
       // Draw power-ups
       powerUps.forEach(powerUp => {
-        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
+        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
         const size = 40 * baseScale;
         if (powerUp.type === 'star') {
           ctx.fillStyle = '#FFD700'; // Gold
@@ -1223,9 +1226,9 @@
       
       // Draw player
       const img = IM.folder;
-      if (img && img.width > 0) {
-        const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 1000; // Proportional to screen size
-        const scale = 0.15 * baseScale * 0.6; // 40% smaller
+              if (img && img.width > 0) {
+          const baseScale = Math.min(canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1)) / 800; // Proportional to screen size
+          const scale = 0.15 * baseScale * 0.6; // 40% smaller
         const width = img.width * scale;
         const height = img.height * scale;
         
